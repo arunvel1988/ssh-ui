@@ -1,0 +1,56 @@
+version: '3.9'
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: guac-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: guacroot
+      MYSQL_DATABASE: guacdb
+      MYSQL_USER: guacuser
+      MYSQL_PASSWORD: guacpass
+    volumes:
+      - guac-mysql-data:/var/lib/mysql
+      - ./init:/docker-entrypoint-initdb.d
+
+  initdb:
+    image: guacamole/guacamole
+    container_name: guac-initdb
+    depends_on:
+      - mysql
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        /opt/guacamole/bin/initdb.sh --mysql > /init/initdb.sql
+    volumes:
+      - ./init:/init
+    restart: "no"
+
+  guacd:
+    image: guacamole/guacd
+    container_name: guacd
+    restart: unless-stopped
+
+  guacamole:
+    image: guacamole/guacamole
+    container_name: guacamole
+    depends_on:
+      - guacd
+      - mysql
+      - initdb
+    environment:
+      MYSQL_HOSTNAME: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: guacdb
+      MYSQL_USER: guacuser
+      MYSQL_PASSWORD: guacpass
+      GUACD_HOSTNAME: guacd
+      GUACD_PORT: 4822
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+volumes:
+  guac-mysql-data:
