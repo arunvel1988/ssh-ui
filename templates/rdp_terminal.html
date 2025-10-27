@@ -2,86 +2,81 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Vass Computers - RDP Session</title>
+  <title>Vass Computers - Full Screen RDP</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     html, body {
       margin: 0;
       padding: 0;
+      width: 100%;
       height: 100%;
-      background: linear-gradient(135deg, #0f172a, #1e3a8a);
+      background: #000;
+      overflow: hidden;
       font-family: 'Inter', sans-serif;
-      color: white;
-    }
-
-    .glass {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      height: 95vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 1rem;
-      margin: auto;
-      max-width: 90%;
     }
 
     iframe {
-      flex-grow: 1;
-      width: 100%;
-      height: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
       border: none;
-      border-radius: 12px;
+    }
+
+    .top-bar {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 100;
+      display: flex;
+      gap: 10px;
     }
 
     .glow-btn {
-      transition: all 0.3s ease-in-out;
+      background-color: #2563eb;
+      color: white;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 6px;
+      transition: all 0.2s ease-in-out;
     }
 
     .glow-btn:hover {
+      background-color: #1d4ed8;
       box-shadow: 0 0 15px 3px #60a5fa;
       transform: scale(1.05);
+    }
+
+    .exit-btn {
+      background-color: #ef4444;
+    }
+
+    .exit-btn:hover {
+      background-color: #dc2626;
     }
   </style>
 </head>
 
 <body>
-  <div class="glass">
-    <div class="text-center">
-      <h1 class="text-3xl font-bold mb-1 text-blue-300">Vass Computers</h1>
-      <p class="mb-4 text-gray-200">Windows Remote Desktop Session</p>
-    </div>
-
-    <!-- Embed Guacamole here -->
-    <iframe id="rdp-frame" src="http://34.47.254.251:8080/guacamole/#/client/{{ host }}" title="RDP Session"></iframe>
-
-    <div class="mt-4 flex justify-center gap-3">
-      <a href="/" class="glow-btn p-2 rounded-md bg-blue-500 font-semibold hover:bg-blue-600">
-        ⬅ Back to Dashboard
-      </a>
-
-      <button onclick="toggleFullScreen()" class="glow-btn p-2 rounded-md bg-green-500 font-semibold hover:bg-green-600">
-        ⛶ Full Screen
-      </button>
-    </div>
-
-    <footer class="mt-4 text-center text-sm text-gray-400">
-      © 2025 Vass Computers. Secure Remote Access Suite.
-    </footer>
+  <!-- Control bar -->
+  <div class="top-bar">
+    <a href="/" class="glow-btn">⬅ Back</a>
+    <button class="glow-btn" onclick="enterFullScreen()">⛶ Full Screen</button>
   </div>
 
+  <!-- Guacamole iframe -->
+  <iframe id="rdp-frame" src="http://34.47.254.251:8080/guacamole/#/client/{{ host }}" title="RDP Session"></iframe>
+
   <script>
-    function toggleFullScreen() {
+    function enterFullScreen() {
       const iframe = document.getElementById('rdp-frame');
-      if (!document.fullscreenElement) {
-        iframe.requestFullscreen().catch(err => {
-          alert(`Error trying fullscreen: ${err.message}`);
-        });
-      } else {
-        document.exitFullscreen();
+      if (iframe.requestFullscreen) {
+        iframe.requestFullscreen();
+      } else if (iframe.webkitRequestFullscreen) { /* Safari */
+        iframe.webkitRequestFullscreen();
+      } else if (iframe.msRequestFullscreen) { /* IE11 */
+        iframe.msRequestFullscreen();
       }
     }
   </script>
