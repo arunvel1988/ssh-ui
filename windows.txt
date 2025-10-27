@@ -1,0 +1,11 @@
+#################################################################
+
+# Disable Network Level Authentication (NLA)
+Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -Name "UserAuthentication" -Value 0
+
+# Allow standard RDP (instead of only TLS/NLA)
+Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -Name "SecurityLayer" -Value 0
+
+# Restart the RDP service
+Restart-Service TermService -Force
+#####################################################################
