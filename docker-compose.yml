@@ -21,7 +21,7 @@ services:
   initdb:
     image: guacamole/guacamole
     container_name: guac-initdb
-    user: "0:0"          # ✅ Run as root to avoid permission issues
+    user: "0:0"
     depends_on:
       mysql:
         condition: service_healthy
@@ -39,6 +39,25 @@ services:
       - ./initdb-data:/init
     restart: "no"
 
+  initdb-import:
+    image: mysql:8
+    container_name: guac-initdb-import
+    depends_on:
+      mysql:
+        condition: service_healthy
+      initdb:
+        condition: service_completed_successfully
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        echo "🧩 Importing Guacamole schema into MySQL..."
+        mysql -h mysql -u root -pguacroot guacdb < /init/initdb.sql
+        echo "✅ Schema imported successfully!"
+    volumes:
+      - ./initdb-data:/init
+    restart: "no"
+
   guacd:
     image: guacamole/guacd
     container_name: guacd
@@ -50,7 +69,7 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-      initdb:
+      initdb-import:
         condition: service_completed_successfully
       guacd:
         condition: service_started
