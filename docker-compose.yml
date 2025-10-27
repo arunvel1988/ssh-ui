@@ -13,16 +13,23 @@ services:
     volumes:
       - guac-mysql-data:/var/lib/mysql
       - ./init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pguacroot"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   initdb:
     image: guacamole/guacamole
     container_name: guac-initdb
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     entrypoint: /bin/sh
     command:
       - -c
       - |
+        echo "🔧 Generating Guacamole schema..."
         /opt/guacamole/bin/initdb.sh --mysql > /init/initdb.sql
     volumes:
       - ./init:/init
@@ -37,9 +44,12 @@ services:
     image: guacamole/guacamole
     container_name: guacamole
     depends_on:
-      - guacd
-      - mysql
-      - initdb
+      mysql:
+        condition: service_healthy
+      initdb:
+        condition: service_completed_successfully
+      guacd:
+        condition: service_started
     environment:
       MYSQL_HOSTNAME: mysql
       MYSQL_PORT: 3306
@@ -51,6 +61,11 @@ services:
     ports:
       - "8080:8080"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/guacamole/"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
 volumes:
   guac-mysql-data:
