@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Vass Computers - SSH Connect</title>
+  <title>Vass Computers - Remote Access</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
@@ -34,9 +34,18 @@
 <body>
   <div class="glass p-10 w-full max-w-md text-white text-center">
     <h1 class="text-3xl font-bold mb-2 text-blue-300">Vass Computers</h1>
-    <p class="mb-6 text-gray-200">Secure SSH Access Portal</p>
+    <p class="mb-6 text-gray-200">Secure Remote Access Portal</p>
 
+    <!-- form opens in new tab -->
     <form method="post" target="_blank" class="flex flex-col gap-4 text-left">
+
+      <label class="text-gray-300">Connection Type:</label>
+      <select name="connection_type"
+              class="p-2 rounded-md bg-gray-900 bg-opacity-70 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+        <option value="ssh">SSH (Linux)</option>
+        <option value="rdp">RDP (Windows)</option>
+      </select>
+
       <label class="text-gray-300">Host:</label>
       <input name="host" value="localhost"
              class="p-2 rounded-md bg-gray-900 bg-opacity-70 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
@@ -49,13 +58,13 @@
       <input name="password" type="password"
              class="p-2 rounded-md bg-gray-900 bg-opacity-70 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
 
-      <label class="text-gray-300">Key File Path (on server):</label>
+      <label class="text-gray-300">Key File Path (for SSH):</label>
       <input name="key_file" placeholder="/home/user/.ssh/id_rsa"
              class="p-2 rounded-md bg-gray-900 bg-opacity-70 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
 
       <button type="submit"
               class="glow-btn mt-4 p-2 rounded-md bg-blue-500 font-semibold hover:bg-blue-600">
-         Open Terminal
+         Open Connection
       </button>
     </form>
 
