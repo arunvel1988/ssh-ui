@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Vass Computers - SSH Connect</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #0f172a, #1e3a8a);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Inter', sans-serif;
+    }
+    .glass {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .glow-btn {
+      transition: all 0.3s ease-in-out;
+    }
+    .glow-btn:hover {
+      box-shadow: 0 0 15px 3px #60a5fa;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="glass p-10 w-full max-w-md text-white text-center">
+    <h1 class="text-3xl font-bold mb-2 text-blue-300">Vass Computers</h1>
+    <p class="mb-6 text-gray-200">Secure SSH Access Portal</p>
+
+    <form method="post" target="_blank" class="flex flex-col gap-4 text-left">
+      <label class="text-gray-300">Host:</label>
+      <input name="host" value="localhost"
+             class="p-2 rounded-md bg-gray-900 bg-opacity-70 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+
+      <label class="text-gray-300">Username:</label>
+      <input name="username" placeholder="e.g., admin"
+             class="p-2 rounded-md bg-gray-900 bg-opacity-70 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+
+      <label class="text-gray-300">Password (leave blank to use key):</label>
+      <input name="password" type="password"
+             class="p-2 rounded-md bg-gray-900 bg-opacity-70 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+
+      <label class="text-gray-300">Key File Path (on server):</label>
+      <input name="key_file" placeholder="/home/user/.ssh/id_rsa"
+             class="p-2 rounded-md bg-gray-900 bg-opacity-70 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+
+      <button type="submit"
+              class="glow-btn mt-4 p-2 rounded-md bg-blue-500 font-semibold hover:bg-blue-600">
+         Open Terminal
+      </button>
+    </form>
+
+    <footer class="mt-6 text-sm text-gray-400">
+      © 2025 Vass Computers. Secure Remote Access Suite.
+    </footer>
+  </div>
+</body>
+</html>
