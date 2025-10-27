@@ -9,3 +9,7 @@ Set-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Terminal Server\W
 # Restart the RDP service
 Restart-Service TermService -Force
 #####################################################################
+qwinsta
+
+logoff <SessionID>
+#########################################################
