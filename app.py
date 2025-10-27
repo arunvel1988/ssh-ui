@@ -11,26 +11,33 @@ app = Flask(__name__)
 app.secret_key = "supersecretkey"
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
-# sid -> SSH channel mapping
 channels = {}
-
-# Regex to remove ANSI escape sequences
 ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
+        connection_type = request.form['connection_type']
         host = request.form['host']
         username = request.form['username']
         password = request.form.get('password', '')
         key_file = request.form.get('key_file', '')
-        return render_template('ssh_terminal.html',
-                               host=host,
-                               username=username,
-                               password=password,
-                               key_file=key_file)
+
+        if connection_type == "ssh":
+            return render_template('ssh_terminal.html',
+                                   host=host,
+                                   username=username,
+                                   password=password,
+                                   key_file=key_file)
+        elif connection_type == "rdp":
+            return render_template('rdp_terminal.html',
+                                   host=host,
+                                   username=username,
+                                   password=password)
     return render_template('index.html')
 
+
+# ===== SSH HANDLING =====
 @socketio.on('connect_ssh')
 def handle_connect_ssh(data):
     sid = request.sid
@@ -55,9 +62,7 @@ def handle_connect_ssh(data):
                 })
             elif key_file:
                 if not os.path.exists(key_file):
-                    socketio.emit('ssh_output', {
-                        'output': f"Error: key file does not exist: {key_file}\r\n"
-                    }, to=sid)
+                    socketio.emit('ssh_output', {'output': f"Error: key file does not exist: {key_file}\r\n"}, to=sid)
                     return
                 try:
                     pkey = paramiko.RSAKey.from_private_key_file(key_file)
@@ -65,19 +70,11 @@ def handle_connect_ssh(data):
                     try:
                         pkey = paramiko.Ed25519Key.from_private_key_file(key_file)
                     except Exception:
-                        socketio.emit('ssh_output', {
-                            'output': "Error: Failed to load key file\r\n"
-                        }, to=sid)
+                        socketio.emit('ssh_output', {'output': "Error: Failed to load key file\r\n"}, to=sid)
                         return
-                connect_kwargs.update({
-                    'pkey': pkey,
-                    'allow_agent': False,
-                    'look_for_keys': False
-                })
+                connect_kwargs.update({'pkey': pkey, 'allow_agent': False, 'look_for_keys': False})
             else:
-                socketio.emit('ssh_output', {
-                    'output': 'Error: No authentication provided.\r\n'
-                }, to=sid)
+                socketio.emit('ssh_output', {'output': 'Error: No authentication provided.\r\n'}, to=sid)
                 return
 
             ssh.connect(**connect_kwargs)
@@ -88,9 +85,7 @@ def handle_connect_ssh(data):
             chan.invoke_shell()
             channels[sid] = chan
 
-            socketio.emit('ssh_output', {
-                'output': f"*** Connected to {host} as {username} ***\r\n"
-            }, to=sid)
+            socketio.emit('ssh_output', {'output': f"*** Connected to {host} as {username} ***\r\n"}, to=sid)
 
             while True:
                 if chan.recv_ready():
@@ -100,10 +95,8 @@ def handle_connect_ssh(data):
                     text = data.decode('utf-8', errors='replace')
                     clean_text = ansi_escape.sub('', text)
                     socketio.emit('ssh_output', {'output': clean_text}, to=sid)
-
                 if chan.exit_status_ready() and not chan.recv_ready():
                     break
-
                 eventlet.sleep(0.01)
 
         except Exception as e:
@@ -123,6 +116,7 @@ def handle_connect_ssh(data):
             socketio.emit('ssh_output', {'output': '*** SSH session closed ***\r\n'}, to=sid)
 
     socketio.start_background_task(ssh_worker, sid, host, username, password, key_file)
+
 
 @socketio.on('ssh_input')
 def handle_ssh_input(data):
