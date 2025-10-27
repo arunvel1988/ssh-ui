@@ -29,19 +29,18 @@ services:
     command:
       - -c
       - |
-        echo "🔧 Preparing /init directory..."
+        echo "🔧 Generating Guacamole schema..."
         mkdir -p /init
         chmod 777 /init
-        echo "🔧 Generating Guacamole schema..."
         /opt/guacamole/bin/initdb.sh --mysql > /init/initdb.sql
-        echo "✅ Schema generated successfully!"
+        echo "✅ initdb.sql generated successfully!"
     volumes:
       - ./initdb-data:/init
     restart: "no"
 
-  initdb-import:
+  import-schema:
     image: mysql:8
-    container_name: guac-initdb-import
+    container_name: guac-import
     depends_on:
       mysql:
         condition: service_healthy
@@ -51,7 +50,11 @@ services:
     command:
       - -c
       - |
-        echo "🧩 Importing Guacamole schema into MySQL..."
+        echo "🧩 Importing schema into MySQL..."
+        until mysql -h mysql -u root -pguacroot -e "SELECT 1" >/dev/null 2>&1; do
+          echo "⏳ Waiting for MySQL..."
+          sleep 3
+        done
         mysql -h mysql -u root -pguacroot guacdb < /init/initdb.sql
         echo "✅ Schema imported successfully!"
     volumes:
@@ -67,9 +70,7 @@ services:
     image: guacamole/guacamole
     container_name: guacamole
     depends_on:
-      mysql:
-        condition: service_healthy
-      initdb-import:
+      import-schema:
         condition: service_completed_successfully
       guacd:
         condition: service_started
