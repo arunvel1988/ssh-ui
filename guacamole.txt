@@ -1,0 +1,4 @@
+mkdir -p ./initdb-data
+chmod 777 ./initdb-data
+docker compose down -v
+docker compose up -d
