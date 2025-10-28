@@ -3,3 +3,11 @@ sudo apt install ubuntu-desktop -y     # or "sudo apt install xubuntu-desktop -y
 sudo apt install xrdp -y
 sudo systemctl enable xrdp
 sudo systemctl start xrdp
+
+sudo nano /etc/ssh/sshd_config
+
+PasswordAuthentication yes
+PubkeyAuthentication yes
+
+sudo systemctl restart ssh
+
