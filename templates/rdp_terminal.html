@@ -57,53 +57,15 @@
   <!-- Button bar (bottom right corner) -->
   <div class="bottom-bar">
     <a href="/" class="glow-btn">⬅ Back</a>
-    <button id="fullscreen-btn" class="glow-btn" onclick="toggleFullScreen()">⛶ Full Screen</button>
   </div>
 
-  <!-- Guacamole iframe -->
+  <!-- Guacamole iframe (embed mode for proper focus) -->
   <iframe 
     id="rdp-frame"
-    src="http://34.47.254.251:8080/guacamole/#/client/{{ host }}" 
+    src="http://34.47.254.251:8080/guacamole/#/client/{{ host }}?embed=true"
     title="RDP Session"
     allow="fullscreen; keyboard-lock; clipboard-read; clipboard-write"
     tabindex="0"
   ></iframe>
-
-  <script>
-    async function toggleFullScreen() {
-      const iframe = document.getElementById('rdp-frame');
-      const button = document.getElementById('fullscreen-btn');
-
-      if (!document.fullscreenElement) {
-        try {
-          // Enter fullscreen
-          await iframe.requestFullscreen();
-
-          // Request keyboard lock (for Guacamole input)
-          if (navigator.keyboard && navigator.keyboard.lock) {
-            await navigator.keyboard.lock(['Escape']);
-          }
-
-          button.textContent = '⛶ Exit Full Screen';
-        } catch (err) {
-          console.error('Error entering fullscreen or locking keyboard:', err);
-        }
-      } else {
-        // Exit fullscreen
-        if (document.exitFullscreen) {
-          await document.exitFullscreen();
-        }
-        button.textContent = '⛶ Full Screen';
-      }
-    }
-
-    // Optional: update button when fullscreen is exited manually
-    document.addEventListener('fullscreenchange', () => {
-      const button = document.getElementById('fullscreen-btn');
-      if (!document.fullscreenElement) {
-        button.textContent = '⛶ Full Screen';
-      }
-    });
-  </script>
 </body>
 </html>
