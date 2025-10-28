@@ -4,6 +4,12 @@ sudo apt install xrdp -y
 sudo systemctl enable xrdp
 sudo systemctl start xrdp
 
+########################################
+# ligher than ubuntu-desktop#################
+sudo apt install xfce4 xfce4-goodies -y
+sudo apt install xubuntu-desktop -y
+###########################################################
+
 sudo nano /etc/ssh/sshd_config
 
 PasswordAuthentication yes
