@@ -32,3 +32,9 @@ PasswordAuthentication yes
 sudo systemctl restart sshd
 
 ############################################################
+sudo nano /etc/ssh/sshd_config
+
+ListenAddress 0.0.0.0
+
+sudo systemctl restart ssh
+#######################
