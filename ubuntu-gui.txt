@@ -11,3 +11,18 @@ PubkeyAuthentication yes
 
 sudo systemctl restart ssh
 
+
+###########################################
+# incase of file override ########################
+
+sudo grep -r "PasswordAuthentication" /etc/ssh/sshd_config.d/
+
+sudo nano /etc/ssh/sshd_config.d/60-cloudimg-settings.conf
+
+
+PasswordAuthentication yes
+
+
+sudo systemctl restart sshd
+
+############################################################
