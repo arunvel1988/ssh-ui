@@ -38,3 +38,21 @@ ListenAddress 0.0.0.0
 
 sudo systemctl restart ssh
 #######################
+
+######### for gnome browser also ###########################
+
+
+sudo nano /etc/xrdp/startwm.sh
+
+# Start XFCE for RDP sessions
+startxfce4
+## as testuser #####
+echo "startxfce4" > ~/.xsession
+chmod +x ~/.xsession
+## as testuser #####
+
+sudo systemctl restart xrdp
+sudo systemctl status xrdp
+
+
+######################################
