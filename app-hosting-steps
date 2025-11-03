@@ -84,3 +84,7 @@ sudo certbot --nginx -d labs.vasscomputer.co.in -d labs.vasscomputer.co.in
 
 
 sudo certbot renew --dry-run
+###############################################################################
+change rdp_terminal.html for https
+src="https://labs.vasscomputer.co.in/guacamole/#/client/{{ host }}?embed=true"
+##################################################################
