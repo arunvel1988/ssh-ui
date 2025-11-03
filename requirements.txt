@@ -2,3 +2,4 @@ Flask
 paramiko
 flask-socketio
 eventlet
+gunicorn
