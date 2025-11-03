@@ -28,7 +28,47 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
     }
 }
+######################################################################
+###########################################################################
 
+server {
+    listen 80;
+    server_name labs.vasscomputer.co.in;
+
+    # Redirect all HTTP to HTTPS
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name labs.vasscomputer.co.in;
+
+    # SSL certificates
+    ssl_certificate /etc/letsencrypt/live/labs.vasscomputer.co.in/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/labs.vasscomputer.co.in/privkey.pem;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    # Your Flask app (port 5000)
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    # Guacamole proxy (Docker exposed on 8080)
+    location /guacamole/ {
+        proxy_pass http://127.0.0.1:8080/guacamole/;
+        proxy_buffering off;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+
+###################################################################################
 
 
 sudo ln -s /etc/nginx/sites-available/vasscomputer /etc/nginx/sites-enabled/
