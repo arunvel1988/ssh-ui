@@ -20,7 +20,7 @@ sudo apt install nano -y
 sudo nano /etc/nginx/sites-available/vasscomputer
 server {
     listen 80;
-    server_name vasscomputer.co.in www.vasscomputer.co.in;
+    server_name labs.vasscomputer.co.in ;
 
     location / {
         proxy_pass http://127.0.0.1:5000;
