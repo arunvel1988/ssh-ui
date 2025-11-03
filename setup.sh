@@ -72,5 +72,7 @@ else
 fi
 
 # Run Python application
-echo "Running app.py..."
-python3 app.py
+#echo "Running app.py..."
+#python3 app.py
+
+nohup gunicorn --bind 127.0.0.1:5000 app:app > gunicorn.log 2>&1 &
