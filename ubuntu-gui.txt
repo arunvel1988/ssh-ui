@@ -1,3 +1,7 @@
+sudo adduser admin
+
+sudo usermod -aG sudo 123
+######################################################
 sudo apt update
 sudo apt install ubuntu-desktop -y     # or "sudo apt install xubuntu-desktop -y" for lightweight
 sudo apt install xrdp -y
