@@ -62,9 +62,9 @@ sudo systemctl status xrdp
 ######################################
 
     sudo apt update -y
-    sudo apt install build-essential
+    sudo apt install build-essential -y
 
-    sudo apt install gcc-13
+    sudo apt install gcc-13 -y
 
     sudo apt install linux-headers-$(uname -r)
 
