@@ -2,7 +2,7 @@ sudo adduser arun
 
 sudo usermod -aG sudo arun
 ######################################################
-sudo apt update
+sudo apt update -y
 sudo apt install ubuntu-desktop -y     # or "sudo apt install xubuntu-desktop -y" for lightweight
 sudo apt install xrdp -y
 sudo systemctl enable xrdp
