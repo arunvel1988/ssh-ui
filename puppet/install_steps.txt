@@ -91,7 +91,6 @@ end
 
 nano setup-master.sh
 
-
 #!/bin/bash
 
 # Update system and install required dependencies
@@ -116,6 +115,13 @@ echo "JAVA_ARGS=\"-Xms2g -Xmx2g\"" | sudo tee -a /etc/default/puppetserver
 echo "Allowing firewall port 8140..."
 sudo ufw allow 8140
 
+# Ensure proper permissions for Puppet directories
+echo "Fixing directory permissions for Puppet..."
+sudo mkdir -p /etc/puppetlabs/puppet/ssl
+sudo chown -R puppet:puppet /etc/puppetlabs/puppet
+sudo chmod -R 755 /etc/puppetlabs/puppet
+sudo chmod 700 /etc/puppetlabs/puppet/ssl
+
 # Start Puppet Server
 echo "Starting Puppet Server..."
 sudo systemctl start puppetserver
@@ -127,6 +133,14 @@ sudo systemctl enable puppetserver
 # Check the status of Puppet Server to ensure it is running
 echo "Checking Puppet Server status..."
 sudo systemctl status puppetserver
+
+# Ensure the Puppet server is running, if not, log error
+if systemctl is-active --quiet puppetserver; then
+    echo "Puppet Server started successfully!"
+else
+    echo "Error: Puppet Server failed to start. Please check the logs for details."
+    exit 1
+fi
 
 echo "Puppet Master setup completed successfully!"
 
