@@ -31,6 +31,8 @@ cd ~/puppet-vagrant
 ###################################################################################
 
 nano Vagrantfile
+
+
 Vagrant.configure("2") do |config|
   # Puppet Master
   config.vm.define "puppet-master" do |master|
@@ -38,11 +40,10 @@ Vagrant.configure("2") do |config|
     master.vm.hostname = "puppet-master"
     master.vm.network "private_network", type: "dhcp"
     
-    # Set CPU, RAM, and Disk for Puppet Master
+    # Set CPU and RAM for Puppet Master
     master.vm.provider "virtualbox" do |vb|
       vb.memory = "2048"   # Allocate 2GB of RAM
       vb.cpus = 2          # Allocate 2 CPUs
-      vb.disk :size => 40960  # Allocate 40GB of disk
     end
 
     master.vm.provision "shell", path: "setup-master.sh"
@@ -54,11 +55,10 @@ Vagrant.configure("2") do |config|
     agent1.vm.hostname = "puppet-agent-1"
     agent1.vm.network "private_network", type: "dhcp"
 
-    # Set CPU, RAM, and Disk for Puppet Agent 1
+    # Set CPU and RAM for Puppet Agent 1
     agent1.vm.provider "virtualbox" do |vb|
       vb.memory = "1024"   # Allocate 1GB of RAM
       vb.cpus = 1          # Allocate 1 CPU
-      vb.disk :size => 20480  # Allocate 20GB of disk
     end
 
     agent1.vm.provision "shell", path: "setup-agent.sh"
@@ -70,16 +70,17 @@ Vagrant.configure("2") do |config|
     agent2.vm.hostname = "puppet-agent-2"
     agent2.vm.network "private_network", type: "dhcp"
 
-    # Set CPU, RAM, and Disk for Puppet Agent 2
+    # Set CPU and RAM for Puppet Agent 2
     agent2.vm.provider "virtualbox" do |vb|
       vb.memory = "1024"   # Allocate 1GB of RAM
       vb.cpus = 1          # Allocate 1 CPU
-      vb.disk :size => 20480  # Allocate 20GB of disk
     end
 
     agent2.vm.provision "shell", path: "setup-agent.sh"
   end
 end
+
+
 #########################################################################
 
 
