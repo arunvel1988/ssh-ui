@@ -110,8 +110,9 @@ sudo apt-get install puppetserver -y
 echo "Configuring JVM memory for Puppet Server..."
 echo "JAVA_ARGS=\"-Xms2g -Xmx2g\"" | sudo tee -a /etc/default/puppetserver
 
-# Open firewall port for Puppet Server (port 8140)
-echo "Allowing firewall port 8140..."
+# Ensure firewall is enabled and allow port 8140
+echo "Ensuring firewall is enabled and allowing port 8140..."
+sudo ufw enable
 sudo ufw allow 8140
 
 # Ensure proper permissions for Puppet directories
@@ -131,13 +132,14 @@ sudo systemctl enable puppetserver
 
 # Check the status of Puppet Server to ensure it is running
 echo "Checking Puppet Server status..."
-sudo systemctl status puppetserver
+sudo systemctl status puppetserver | tee /tmp/puppetserver_status.log
 
 # Ensure the Puppet server is running, if not, log error
 if systemctl is-active --quiet puppetserver; then
     echo "Puppet Server started successfully!"
 else
     echo "Error: Puppet Server failed to start. Please check the logs for details."
+    cat /tmp/puppetserver_status.log
     exit 1
 fi
 
