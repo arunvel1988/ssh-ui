@@ -95,6 +95,7 @@ nano setup-master.sh
 # Update system and install required dependencies
 echo "Updating system and installing required dependencies..."
 sudo apt-get update -y
+sudo apt-get install -y build-essential wget gcc g++ make
 
 # Install the Puppet release package
 echo "Downloading and installing Puppet release package..."
@@ -106,21 +107,41 @@ sudo apt-get update -y
 echo "Installing Puppet Server..."
 sudo apt-get install puppetserver -y
 
-# Configure JVM memory for Puppet Server
-echo "Configuring JVM memory for Puppet Server..."
-echo "JAVA_ARGS=\"-Xms2g -Xmx2g\"" | sudo tee -a /etc/default/puppetserver
-
-# Ensure firewall is enabled and allow port 8140
-echo "Ensuring firewall is enabled and allowing port 8140..."
-sudo ufw enable
-sudo ufw allow 8140
-
 # Ensure proper permissions for Puppet directories
 echo "Fixing directory permissions for Puppet..."
 sudo mkdir -p /etc/puppetlabs/puppet/ssl
 sudo chown -R puppet:puppet /etc/puppetlabs/puppet
 sudo chmod -R 755 /etc/puppetlabs/puppet
 sudo chmod 700 /etc/puppetlabs/puppet/ssl
+
+# Configuring JVM memory for Puppet Server
+echo "Configuring JVM memory for Puppet Server..."
+echo "JAVA_ARGS=\"-Xms2g -Xmx2g\"" | sudo tee -a /etc/default/puppetserver
+
+# Open firewall port for Puppet Server (port 8140)
+echo "Allowing firewall port 8140..."
+sudo ufw allow 8140
+
+# Attempt to fix GLIBC issue (Install required version if needed)
+echo "Checking if GLIBC 2.34 is installed..."
+CURRENT_GLIBC_VERSION=$(ldd --version | head -n 1 | awk '{print $NF}')
+if [[ "$CURRENT_GLIBC_VERSION" < "2.34" ]]; then
+    echo "GLIBC version is too old. Installing required GLIBC version..."
+    wget http://ftp.gnu.org/gnu/libc/glibc-2.34.tar.gz
+    tar -xvzf glibc-2.34.tar.gz
+    cd glibc-2.34
+    mkdir build
+    cd build
+    ../configure --prefix=/opt/glibc-2.34
+    make -j$(nproc)
+    sudo make install
+    cd ../../
+    echo "export LD_LIBRARY_PATH=/opt/glibc-2.34/lib:$LD_LIBRARY_PATH" >> ~/.bashrc
+    source ~/.bashrc
+    echo "GLIBC 2.34 installed successfully!"
+else
+    echo "GLIBC version is sufficient."
+fi
 
 # Start Puppet Server
 echo "Starting Puppet Server..."
@@ -132,14 +153,13 @@ sudo systemctl enable puppetserver
 
 # Check the status of Puppet Server to ensure it is running
 echo "Checking Puppet Server status..."
-sudo systemctl status puppetserver | tee /tmp/puppetserver_status.log
+sudo systemctl status puppetserver
 
 # Ensure the Puppet server is running, if not, log error
 if systemctl is-active --quiet puppetserver; then
     echo "Puppet Server started successfully!"
 else
     echo "Error: Puppet Server failed to start. Please check the logs for details."
-    cat /tmp/puppetserver_status.log
     exit 1
 fi
 
