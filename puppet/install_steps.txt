@@ -34,7 +34,7 @@ nano Vagrantfile
 Vagrant.configure("2") do |config|
   # Puppet Master
   config.vm.define "puppet-master" do |master|
-    master.vm.box = "ubuntu/focal64"  # Ubuntu 24.04 (Focal Fossa)
+    master.vm.box = "ubuntu/jammy64"  # Ubuntu 22.04 (Jammy)
     master.vm.hostname = "puppet-master"
     master.vm.network "private_network", type: "dhcp"
     
@@ -49,7 +49,7 @@ Vagrant.configure("2") do |config|
 
   # Puppet Agent 1
   config.vm.define "puppet-agent-1" do |agent1|
-    agent1.vm.box = "ubuntu/focal64"  # Ubuntu 24.04 (Focal Fossa)
+    agent1.vm.box = "ubuntu/jammy64"  # Ubuntu 22.04 (Jammy)
     agent1.vm.hostname = "puppet-agent-1"
     agent1.vm.network "private_network", type: "dhcp"
 
@@ -64,7 +64,7 @@ Vagrant.configure("2") do |config|
 
   # Puppet Agent 2 (optional, add more agents if needed)
   config.vm.define "puppet-agent-2" do |agent2|
-    agent2.vm.box = "ubuntu/focal64"  # Ubuntu 24.04 (Focal Fossa)
+    agent2.vm.box = "ubuntu/jammy64"  # Ubuntu 22.04 (Jammy)
     agent2.vm.hostname = "puppet-agent-2"
     agent2.vm.network "private_network", type: "dhcp"
 
