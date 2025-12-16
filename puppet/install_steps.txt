@@ -1,0 +1,119 @@
+#####################################################################################################
+
+sudo apt update
+sudo apt install -y virtualbox
+
+
+sudo apt install -y software-properties-common
+sudo add-apt-repository ppa:hashicorp/vagrant
+sudo apt update
+sudo apt install vagrant
+
+vagrant --version
+virtualbox --version
+
+
+mkdir ~/puppet-vagrant
+cd ~/puppet-vagrant
+
+
+###################################################################################
+
+nano Vagrantfile
+
+
+Vagrant.configure("2") do |config|
+  # Puppet Master
+  config.vm.define "puppet-master" do |master|
+    master.vm.box = "ubuntu/bionic64"
+    master.vm.hostname = "puppet-master"
+    master.vm.network "private_network", type: "dhcp"
+    master.vm.provision "shell", path: "setup-master.sh"
+  end
+
+  # Puppet Agent 1
+  config.vm.define "puppet-agent-1" do |agent1|
+    agent1.vm.box = "ubuntu/bionic64"
+    agent1.vm.hostname = "puppet-agent-1"
+    agent1.vm.network "private_network", type: "dhcp"
+    agent1.vm.provision "shell", path: "setup-agent.sh"
+  end
+
+  # Puppet Agent 2 (optional, add more agents if needed)
+  config.vm.define "puppet-agent-2" do |agent2|
+    agent2.vm.box = "ubuntu/bionic64"
+    agent2.vm.hostname = "puppet-agent-2"
+    agent2.vm.network "private_network", type: "dhcp"
+    agent2.vm.provision "shell", path: "setup-agent.sh"
+  end
+end
+
+
+#######################################################
+
+nano setup-master.sh
+
+
+#!/bin/bash
+
+# Update and install Puppet Server
+apt-get update -y
+apt-get install -y puppetserver
+
+# Configure Puppet Server
+echo "JAVA_ARGS=\"-Xms2g -Xmx2g\"" >> /etc/default/puppetserver
+
+# Enable and start Puppet Server
+systemctl enable puppetserver
+systemctl start puppetserver
+
+# Allow puppetmaster to start on port 8140
+ufw allow 8140
+
+
+##################################################################
+
+
+nano setup-agent.sh
+
+
+#!/bin/bash
+
+# Update and install Puppet Agent
+apt-get update -y
+apt-get install -y puppet-agent
+
+# Configure Puppet Agent to point to the Puppet Master
+echo "[main]" > /etc/puppetlabs/puppet/puppet.conf
+echo "server = puppet-master" >> /etc/puppetlabs/puppet/puppet.conf
+
+# Enable and start Puppet Agent
+systemctl enable puppet
+systemctl start puppet
+
+# Allow agent to communicate with Puppet Master
+ufw allow 8140
+
+######################################################################
+
+vagrant up
+
+
+vagrant ssh puppet-master
+vagrant ssh puppet-agent-1
+vagrant ssh puppet-agent-2
+
+
+#################################################################
+
+sudo puppetserver ca list --all
+sudo puppetserver ca sign --certname puppet-agent-1
+sudo puppetserver ca sign --certname puppet-agent-2
+
+sudo puppet agent -t
+
+
+
+#######################################################
+
+
