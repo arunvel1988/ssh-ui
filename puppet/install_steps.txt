@@ -67,19 +67,42 @@ nano setup-master.sh
 
 #!/bin/bash
 
-# Update and install Puppet Server
-apt-get update -y
-apt-get install -y puppetserver
+# Update system and install required dependencies
+echo "Updating system and installing required dependencies..."
+sudo apt-get update -y
 
-# Configure Puppet Server
-echo "JAVA_ARGS=\"-Xms2g -Xmx2g\"" >> /etc/default/puppetserver
+# Install the Puppet release package
+echo "Downloading and installing Puppet release package..."
+wget https://apt.puppetlabs.com/puppet8-release-jammy.deb
+sudo dpkg -i puppet8-release-jammy.deb
+sudo apt-get update -y
 
-# Enable and start Puppet Server
-systemctl enable puppetserver
-systemctl start puppetserver
+# Install Puppet Server
+echo "Installing Puppet Server..."
+sudo apt-get install puppetserver -y
 
-# Allow puppetmaster to start on port 8140
-ufw allow 8140
+# Configure JVM memory for Puppet Server
+echo "Configuring JVM memory for Puppet Server..."
+echo "JAVA_ARGS=\"-Xms2g -Xmx2g\"" | sudo tee -a /etc/default/puppetserver
+
+# Open firewall port for Puppet Server (port 8140)
+echo "Allowing firewall port 8140..."
+sudo ufw allow 8140
+
+# Start Puppet Server
+echo "Starting Puppet Server..."
+sudo systemctl start puppetserver
+
+# Enable Puppet Server to start on boot
+echo "Enabling Puppet Server to start on boot..."
+sudo systemctl enable puppetserver
+
+# Check the status of Puppet Server to ensure it is running
+echo "Checking Puppet Server status..."
+sudo systemctl status puppetserver
+
+echo "Puppet Master setup completed successfully!"
+
 
 
 ##################################################################
