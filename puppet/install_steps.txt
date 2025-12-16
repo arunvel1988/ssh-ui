@@ -179,30 +179,26 @@ nano setup-agent.sh
 echo "Updating system and installing required dependencies..."
 sudo apt-get update -y
 
-# Install dependencies for GLIBC upgrade
-echo "Installing required packages for GLIBC upgrade..."
-sudo apt-get install -y build-essential wget
-
-# Download and install GLIBC 2.34 from source (RISKY: Proceed with caution)
-echo "Installing GLIBC 2.34..."
-cd /tmp
-wget http://ftp.gnu.org/gnu/libc/glibc-2.34.tar.gz
-tar -xvzf glibc-2.34.tar.gz
-cd glibc-2.34
-
-# Configure and install GLIBC
-mkdir build
-cd build
-../configure --prefix=/opt/glibc-2.34
-make -j$(nproc)
-sudo make install
-
-# Set the newly installed GLIBC version as the default
-echo "Setting the default GLIBC version to 2.34..."
-sudo ln -sf /opt/glibc-2.34/lib/libc.so.6 /lib/x86_64-linux-gnu/libc.so.6
-
-# Verify GLIBC installation
-ldd --version
+# Attempt to fix GLIBC issue (Install required version if needed)
+echo "Checking if GLIBC 2.34 is installed..."
+CURRENT_GLIBC_VERSION=$(ldd --version | head -n 1 | awk '{print $NF}')
+if [[ "$CURRENT_GLIBC_VERSION" < "2.34" ]]; then
+    echo "GLIBC version is too old. Installing required GLIBC version..."
+    wget http://ftp.gnu.org/gnu/libc/glibc-2.34.tar.gz
+    tar -xvzf glibc-2.34.tar.gz
+    cd glibc-2.34
+    mkdir build
+    cd build
+    ../configure --prefix=/opt/glibc-2.34
+    make -j$(nproc)
+    sudo make install
+    cd ../../
+    echo "export LD_LIBRARY_PATH=/opt/glibc-2.34/lib:$LD_LIBRARY_PATH" >> ~/.bashrc
+    source ~/.bashrc
+    echo "GLIBC 2.34 installed successfully!"
+else
+    echo "GLIBC version is sufficient."
+fi
 
 # Install Puppet release package (specifically Puppet 8)
 echo "Downloading and installing Puppet release package..."
