@@ -113,20 +113,41 @@ nano setup-agent.sh
 
 #!/bin/bash
 
-# Update and install Puppet Agent
-apt-get update -y
-apt-get install -y puppet-agent
+# Update system and install required dependencies
+echo "Updating system and installing required dependencies..."
+sudo apt-get update -y
 
-# Configure Puppet Agent to point to the Puppet Master
-echo "[main]" > /etc/puppetlabs/puppet/puppet.conf
-echo "server = puppet-master" >> /etc/puppetlabs/puppet/puppet.conf
+# Install Puppet release package
+echo "Downloading and installing Puppet release package..."
+wget https://apt.puppetlabs.com/puppet8-release-jammy.deb
+sudo dpkg -i puppet8-release-jammy.deb
+sudo apt-get update -y
 
-# Enable and start Puppet Agent
-systemctl enable puppet
-systemctl start puppet
+# Install Puppet Agent
+echo "Installing Puppet Agent..."
+sudo apt-get install puppet-agent -y
 
-# Allow agent to communicate with Puppet Master
-ufw allow 8140
+# Configure Puppet Agent settings
+echo "Configuring Puppet Agent..."
+sudo mkdir -p /etc/puppetlabs/puppet
+echo "[main]" | sudo tee /etc/puppetlabs/puppet/puppet.conf
+echo "certname = puppetclient" | sudo tee -a /etc/puppetlabs/puppet/puppet.conf
+echo "server = puppetmaster" | sudo tee -a /etc/puppetlabs/puppet/puppet.conf
+
+# Start Puppet Agent
+echo "Starting Puppet Agent..."
+sudo systemctl start puppet
+
+# Enable Puppet Agent to start on boot
+echo "Enabling Puppet Agent to start on boot..."
+sudo systemctl enable puppet
+
+# Check the status of Puppet Agent to ensure it is running
+echo "Checking Puppet Agent status..."
+sudo systemctl status puppet
+
+echo "Puppet Agent setup completed successfully!"
+
 
 ######################################################################
 
