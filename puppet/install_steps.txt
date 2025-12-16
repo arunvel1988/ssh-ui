@@ -1,6 +1,6 @@
 #####################################################################################################
 
-sudo apt update
+sudo apt update -y
 sudo apt install -y virtualbox
 
 
