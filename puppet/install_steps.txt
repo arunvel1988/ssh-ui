@@ -42,7 +42,7 @@ Vagrant.configure("2") do |config|
     
     # Set CPU and RAM for Puppet Master
     master.vm.provider "virtualbox" do |vb|
-      vb.memory = "2048"   # Allocate 2GB of RAM
+      vb.memory = "8096"   # Allocate 2GB of RAM
       vb.cpus = 2          # Allocate 2 CPUs
     end
 
@@ -85,31 +85,6 @@ end
 
 
 ###########################################
-Vagrant.configure("2") do |config|
-  # Puppet Master
-  config.vm.define "puppet-master" do |master|
-    master.vm.box = "ubuntu/bionic64"
-    master.vm.hostname = "puppet-master"
-    master.vm.network "private_network", type: "dhcp"
-    master.vm.provision "shell", path: "setup-master.sh"
-  end
-
-  # Puppet Agent 1
-  config.vm.define "puppet-agent-1" do |agent1|
-    agent1.vm.box = "ubuntu/bionic64"
-    agent1.vm.hostname = "puppet-agent-1"
-    agent1.vm.network "private_network", type: "dhcp"
-    agent1.vm.provision "shell", path: "setup-agent.sh"
-  end
-
-  # Puppet Agent 2 (optional, add more agents if needed)
-  config.vm.define "puppet-agent-2" do |agent2|
-    agent2.vm.box = "ubuntu/bionic64"
-    agent2.vm.hostname = "puppet-agent-2"
-    agent2.vm.network "private_network", type: "dhcp"
-    agent2.vm.provision "shell", path: "setup-agent.sh"
-  end
-end
 
 
 #######################################################
