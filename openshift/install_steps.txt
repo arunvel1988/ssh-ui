@@ -1,0 +1,70 @@
+####################################################
+Ubuntu Linux (20.04 or newer)
+9GB RAM (16GB recommended for better performance)
+4 CPU cores
+35GB free disk space
+Administrative (sudo) access
+Hardware virtualization support (VT-x or AMD-v)
+#################################################################
+
+# Update package list
+sudo apt update
+
+# Install KVM and libvirt
+sudo apt install qemu-kvm libvirt-daemon libvirt-daemon-system
+
+# Verify KVM installation
+kvm-ok
+######################################## Install QEMU and virtiofsd
+sudo apt install qemu-system virtiofsd
+
+# Add your user to the libvirt group
+sudo usermod -aG libvirt $USER
+newgrp libvirt
+#########################################################
+https://developers.redhat.com/products/openshift-local
+Download the latest CRC from Red Hat's Developer portal
+Extract and install the binary:
+# Extract the archive
+tar -xvf crc-linux-amd64.tar.xz
+
+# Move binary to your PATH
+sudo mv crc-linux-*/crc /usr/local/bin/
+
+# Make it executable
+sudo chmod +x /usr/local/bin/crc
+####################################################################
+
+# Run initial setup
+crc setup
+
+# Start the cluster
+crc start
+################################################################
+
+troubleshooting steps
+
+crc config set memory 16384  # Sets memory to 16GB
+crc cleanup
+crc setup
+crc start
+# Stop the cluster
+crc stop
+
+# Delete the cluster
+crc delete
+
+# View cluster status
+crc status
+
+# Get console URL and credentials
+crc console --credentials
+
+# Clean up CRC installation
+crc cleanup
+
+crc config set memory 16384
+crc config set cpus 6
+crc config set enable-nested-virtualization true
+crc console --credentials
+####################################################################################
