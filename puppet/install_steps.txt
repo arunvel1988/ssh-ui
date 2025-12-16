@@ -9,6 +9,14 @@ sudo add-apt-repository ppa:hashicorp/vagrant
 sudo apt update -y
 sudo apt install vagrant -y
 
+############## TROUBLESHOOTING - START #############################################
+ls /etc/apt/sources.list.d/
+
+sudo rm /etc/apt/sources.list.d/<filename>
+
+
+############## TROUBLESHOOTING -END #############################################
+
 vagrant --version
 virtualbox --version
 
