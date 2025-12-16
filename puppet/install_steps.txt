@@ -179,7 +179,32 @@ nano setup-agent.sh
 echo "Updating system and installing required dependencies..."
 sudo apt-get update -y
 
-# Install Puppet release package
+# Install dependencies for GLIBC upgrade
+echo "Installing required packages for GLIBC upgrade..."
+sudo apt-get install -y build-essential wget
+
+# Download and install GLIBC 2.34 from source (RISKY: Proceed with caution)
+echo "Installing GLIBC 2.34..."
+cd /tmp
+wget http://ftp.gnu.org/gnu/libc/glibc-2.34.tar.gz
+tar -xvzf glibc-2.34.tar.gz
+cd glibc-2.34
+
+# Configure and install GLIBC
+mkdir build
+cd build
+../configure --prefix=/opt/glibc-2.34
+make -j$(nproc)
+sudo make install
+
+# Set the newly installed GLIBC version as the default
+echo "Setting the default GLIBC version to 2.34..."
+sudo ln -sf /opt/glibc-2.34/lib/libc.so.6 /lib/x86_64-linux-gnu/libc.so.6
+
+# Verify GLIBC installation
+ldd --version
+
+# Install Puppet release package (specifically Puppet 8)
 echo "Downloading and installing Puppet release package..."
 wget https://apt.puppetlabs.com/puppet8-release-jammy.deb
 sudo dpkg -i puppet8-release-jammy.deb
