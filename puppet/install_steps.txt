@@ -6,8 +6,8 @@ sudo apt install -y virtualbox
 
 sudo apt install -y software-properties-common
 sudo add-apt-repository ppa:hashicorp/vagrant
-sudo apt update
-sudo apt install vagrant
+sudo apt update -y
+sudo apt install vagrant -y
 
 vagrant --version
 virtualbox --version
