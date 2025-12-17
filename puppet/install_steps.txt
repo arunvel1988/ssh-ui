@@ -265,4 +265,22 @@ sudo OPENSSL_CONF=/opt/puppetlabs/puppet/ssl/openssl.cnf \
   /opt/puppetlabs/bin/puppetserver ca list
 sudo OPENSSL_CONF=/opt/puppetlabs/puppet/ssl/openssl.cnf \
   /opt/puppetlabs/bin/puppetserver ca sign --all
-###############
+###########################################
+
+sudo mkdir -p /etc/systemd/system/puppetserver.service.d
+sudo tee /etc/systemd/system/puppetserver.service.d/openssl.conf > /dev/null <<EOL
+[Service]
+Environment="OPENSSL_CONF=/opt/puppetlabs/puppet/ssl/openssl.cnf"
+EOL
+
+
+#######################################################
+
+sudo systemctl daemon-reexec
+sudo systemctl restart puppetserver
+
+################################
+
+/opt/puppetlabs/bin/puppetserver ca list
+/opt/puppetlabs/bin/puppetserver ca sign --all
+#####################
