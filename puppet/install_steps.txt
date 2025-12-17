@@ -259,3 +259,10 @@ sudo journalctl -u puppetserver.service -f
 
 
 ####################################################################
+
+
+sudo OPENSSL_CONF=/opt/puppetlabs/puppet/ssl/openssl.cnf \
+  /opt/puppetlabs/bin/puppetserver ca list
+sudo OPENSSL_CONF=/opt/puppetlabs/puppet/ssl/openssl.cnf \
+  /opt/puppetlabs/bin/puppetserver ca sign --all
+###############
