@@ -4,11 +4,11 @@
 set -e
 
 # ==== IPs & hostnames ====
-MASTER_IP="192.168.56.10"
+MASTER_IP="192.168.56.3"
 MASTER_HOSTNAME="puppet-master"
-AGENT1_IP="192.168.56.11"
+AGENT1_IP="192.168.56.4"
 AGENT1_HOSTNAME="puppet-agent-1"
-AGENT2_IP="192.168.56.12"
+AGENT2_IP="192.168.56.5"
 AGENT2_HOSTNAME="puppet-agent-2"
 
 # Update /etc/hosts
