@@ -27,3 +27,8 @@ cd vagrant-kubeadm-kubernetes
 vagrant up 
 
 ###############################################################################
+
+
+cd vagrant-kubeadm-kubernetes
+cd configs
+export KUBECONFIG=$(pwd)/config
