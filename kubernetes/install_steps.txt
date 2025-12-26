@@ -37,6 +37,14 @@ sudo mv kubectl /usr/local/bin
 
 cd configs
 export KUBECONFIG=$(pwd)/config
+
+# permanent solution ####
+
+echo 'export KUBECONFIG=$(pwd)/config' >> ~/.bashrc
+source ~/.bashrc
+################
+
+
 ###############################################################################
 kubectl get nodes 
 #################
