@@ -1,0 +1,87 @@
+###########################################################################################################################################################
+
+# Update the system
+dnf update -y
+
+# Install the Pre-install RPM (This handles users, groups, and kernel settings)
+dnf install -y https://yum.oracle.com/repo/OracleLinux/OL8/appstream/x86_64/getPackage/oracle-ebs-server-R12-preinstall-1.0.0-3.el8.x86_64.rpm
+
+# Install missing compatibility libraries for RHEL 8
+dnf install -y libnsl libnsl.i686 libaio libaio.i686 libXtst libXtst.i686 libXrender libXrender.i686 libXi libXi.i686 gdbm-devel.i686 gdbm-devel ncurses-devel.i686
+
+# Disable Firewall and SELinux (Required for installation)
+systemctl stop firewalld
+systemctl disable firewalld
+setenforce 0
+sed -i 's/SELINUX=enforcing/SELINUX=permissive/g' /etc/selinux/config
+
+
+###########################################################################################################################################################
+
+# Create directories
+mkdir -p /u01/install
+mkdir -p /u01/stage
+
+# Set permissions (The pre-install RPM already created 'oracle' and 'applmgr' users)
+chown -R oracle:oinstall /u01
+chmod -R 775 /u01
+
+###########################################################################################################################################################
+
+# Set the hostname
+hostnamectl set-hostname ebs.example.com
+
+# Add to hosts file (Replace 192.168.1.50 with your actual IP)
+echo "192.168.1.50 ebs.example.com ebs" >> /etc/hosts
+
+###########################################################################################################################################################
+
+## this step is after you have downloaded zip files in /u01/stage
+
+# Navigate to the startCD directory
+cd /u01/stage/V100052-01/startCD/Disk1/rapidwiz/bin
+
+# Build the stage (This unzips everything into the correct format)
+# Note: You must run this as the 'oracle' user
+su - oracle
+cd /u01/stage/V100052-01/startCD/Disk1/rapidwiz/bin
+./buildStage.sh
+
+
+###########################################################################################################################################################
+
+# Switch to root to start the installer
+exit
+cd /u01/stage/startCD/Disk1/rapidwiz
+./rapidwiz
+
+
+Inside the GUI Wizard, use these exact paths:
+
+    Oracle Config File: /u01/install/conf_VIS.txt
+
+    Database Node Install Root: /u01/install/db
+
+    Apps Node Install Root: /u01/install/apps
+
+    Instance Home: /u01/install/inst
+
+    
+###########################################################################################################################################################
+## db tier
+su - oracle
+source /u01/install/db/proddb/12.1.0/ebs_ebs.env
+# Start DB and Listener
+addbctl.sh start
+adlnstctl.sh start ebs
+
+# app tier 
+
+su - applmgr
+source /u01/install/apps/EBSapps.env run
+# Start all services (Web, Forms, Concurrent Manager)
+adstrtal.sh apps/apps_password
+
+    
+###########################################################################################################################################################
+
