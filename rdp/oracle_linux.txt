@@ -19,16 +19,26 @@ sudo dnf install tigervnc-server -y
 sudo systemctl set-default graphical.target
 sudo reboot
 
+sudo cp /usr/lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@.service
+sudo nano /etc/systemd/system/vncserver@.service
+User=arun
 
-##########################################
+sudo systemctl daemon-reexec
+sudo systemctl daemon-reload
 
 
+sudo systemctl enable --now vncserver@:1.service
 
-
-##########################################
-sudo firewall-cmd --permanent --add-port=3389/tcp
+sudo firewall-cmd --permanent --add-port=5901/tcp
 sudo firewall-cmd --reload
 
+
+##########################################
+
+
+
+
+##########################################
 
 sudo firewall-cmd --list-all
 
