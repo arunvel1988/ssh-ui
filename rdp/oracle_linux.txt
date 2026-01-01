@@ -8,14 +8,15 @@ sudo usermod -aG wheel arun
 sudo dnf update -y
 
 
+##########################################
+
+
+
 sudo dnf groupinstall "Server with GUI" -y
-
-sudo dnf groupinstall "Xfce" -y
-
+sudo dnf install tigervnc-server -y
+##########################################
 
 sudo systemctl set-default graphical.target
-
-
 sudo reboot
 
 
@@ -23,11 +24,8 @@ sudo reboot
 
 
 
-sudo dnf groupinstall "Server with GUI" -y
-sudo dnf install tigervnc-server -y
-vncpasswd
 
-
+##########################################
 sudo firewall-cmd --permanent --add-port=3389/tcp
 sudo firewall-cmd --reload
 
