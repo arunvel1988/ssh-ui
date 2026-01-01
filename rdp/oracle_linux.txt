@@ -33,6 +33,19 @@ sudo firewall-cmd --permanent --add-port=5901/tcp
 sudo firewall-cmd --reload
 
 
+
+sudo nano /home/vncuser/.vnc/xstartup
+
+
+#!/bin/sh
+unset SESSION_MANAGER
+unset DBUS_SESSION_BUS_ADDRESS
+exec /usr/bin/gnome-session &
+
+chmod +x /home/vncuser/.vnc/xstartup
+
+sudo systemctl restart vncserver@:1.service
+
 ##########################################
 
 
