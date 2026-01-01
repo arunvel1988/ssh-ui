@@ -17,3 +17,23 @@ sudo ln -s /usr/lib64/libcrypt.so.2 /usr/lib64/libcrypt.so.1
 
 ########
 
+sudo setenforce 0
+sudo sed -i 's/^SELINUX=.*/SELINUX=permissive/' /etc/selinux/config
+
+#######
+
+
+sudo systemctl disable firewalld --now
+
+#########
+
+sudo sysctl -p
+
+#######
+
+sudo su - arun
+ulimit -a
+
+
+#######
+
