@@ -1,71 +1,8 @@
-To perform a full **Oracle EBS 12.2.0** installation on Red Hat (RHEL), you must download approximately **30 ZIP files** from the Oracle Software Delivery Cloud ([edelivery.oracle.com](https://edelivery.oracle.com)).
-
-Below is the exact list of files grouped by their function. Note that file prefixes (like `V35803-01`) may vary slightly depending on the latest update of the media pack, but the descriptions remain the same.
-
-### 1. Rapid Install "Start Here" (Essential)
-
-These files contain the `rapidwiz` installer and the scripts used to build the stage.
-
-* **V100052-01_1of3.zip** - Rapid Install Start Here (Disk 1)
-* **V100052-01_2of3.zip** - Rapid Install Start Here (Disk 2)
-* **V100052-01_3of3.zip** - Rapid Install Start Here (Disk 3)
-* **p22066363_R12_GENERIC.zip** - (Optional but recommended) **StartCD 51** patch. This replaces the unpatched `startCD` files and is much more stable for RHEL 8.
-
-### 2. Application Tier (APPL_TOP)
-
-These contain the actual EBS application binaries and forms.
-
-* **V35803-01_1of3.zip** to **3of3.zip** - APPL_TOP Disk 1
-* **V35804-01_1of2.zip** to **2of2.zip** - APPL_TOP Disk 2
-* **V35802-01.zip** - AS10.1.2 Technology Stack
-
-### 3. Database Tier (PROD or VISION)
-
-You only need **one** of these sets. "PROD" is an empty production database; "VISION" includes sample data for testing.
-
-* **VISION Database (Recommended for learning):**
-* **V100053-01_1of2.zip** and **2of2.zip** (Disk 1)
-* **V100054-01.zip** (Disk 2)
-* **V100055-01.zip** (Disk 3)
-* **V100056-01.zip** (Disk 4)
-* **V100057-01.zip** (Disk 5)
-* **V100058-01.zip** (Disk 6)
-
-
-* **PROD Database (Empty):**
-* **V100059-01_1of2.zip** and **2of2.zip** (Disk 1)
-* **V100060-01_1of3.zip** to **3of3.zip** (Disk 2)
-
-
-
-### 4. Middleware & Technology Stack
-
-These provide the WebLogic server and Java components.
-
-* **V29856-01.zip** - WebLogic Server 10.3.6 (Generic)
-* **V75792-01.zip** - Web Tier 11.1.1.9.0
-* **V46095-01_1of2.zip** and **2of2.zip** - Oracle Database 12cR1 (12.1.0.2.0)
-* **V100061-01.zip** - Technology One-off Patches
-
----
-
-### Verification and Staging Commands
-
-Once downloaded into `/u01/stage`, use these commands to verify and prepare:
-
-```bash
-# 1. Verify all files are present (should be around 30 files)
-ls -1 /u01/stage/*.zip | wc -l
-
-# 2. Unzip only the StartCD to begin (Assuming StartCD 51)
-unzip p22066363_R12_GENERIC.zip -d /u01/stage/
-
-# 3. Run the Build Stage script
-cd /u01/stage/startCD/Disk1/rapidwiz/bin
-./buildStage.sh
-
-```
-
-*When prompted by `buildStage.sh`, select **Option 1 (Create new stage area)** and then select **Linux x86-64**. Point it to the directory where your 30+ zip files are located.*
-
-This [Oracle EBS R12.2.0 Installation video](https://www.youtube.com/watch?v=5zbKVINUWZM) provides a visual walkthrough of the specific software parts and the download process from eDelivery to ensure you don't miss any critical files.
+sudo dnf install -y \
+gcc gcc-c++ make ksh sysstat \
+libaio libaio-devel \
+glibc glibc-devel \
+libgcc libstdc++ libstdc++-devel \
+libX11 libXrender libXtst libXi \
+elfutils-libelf elfutils-libelf-devel \
+libnsl
