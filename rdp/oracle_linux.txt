@@ -20,17 +20,12 @@ sudo reboot
 
 
 ##########################################
-sudo dnf config-manager --enable ol10_codeready_builder
-sudo dnf config-manager --enable ol10_developer
-sudo dnf config-manager --enable ol10_u0_developer_EPEL
 
 
 
-
-sudo dnf install xrdp -y
-
-sudo systemctl enable xrdp
-sudo systemctl start xrdp
+sudo dnf groupinstall "Server with GUI" -y
+sudo dnf install tigervnc-server -y
+vncpasswd
 
 
 sudo firewall-cmd --permanent --add-port=3389/tcp
