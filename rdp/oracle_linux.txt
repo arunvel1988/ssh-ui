@@ -1,0 +1,46 @@
+sudo useradd arun
+sudo passwd arun
+
+
+sudo usermod -aG wheel arun
+
+
+sudo dnf update -y
+
+
+sudo dnf groupinstall "Server with GUI" -y
+
+sudo dnf groupinstall "Xfce" -y
+
+
+sudo systemctl set-default graphical.target
+
+
+sudo reboot
+
+
+sudo dnf install oracle-epel-release-el8 -y
+
+
+sudo dnf install xrdp -y
+
+sudo systemctl enable xrdp
+sudo systemctl start xrdp
+
+
+sudo firewall-cmd --permanent --add-port=3389/tcp
+sudo firewall-cmd --reload
+
+
+sudo firewall-cmd --list-all
+
+##### disable selinux ##########
+
+
+sudo setenforce 0
+
+sudo vi /etc/selinux/config
+
+SELINUX=disabled
+
+
