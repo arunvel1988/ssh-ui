@@ -19,7 +19,12 @@ sudo systemctl set-default graphical.target
 sudo reboot
 
 
-sudo dnf install oracle-epel-release-el8 -y
+##########################################
+sudo dnf config-manager --enable ol10_codeready_builder
+sudo dnf config-manager --enable ol10_developer
+sudo dnf config-manager --enable ol10_u0_developer_EPEL
+
+
 
 
 sudo dnf install xrdp -y
