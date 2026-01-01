@@ -6,3 +6,14 @@ libgcc libstdc++ libstdc++-devel \
 libX11 libXrender libXtst libXi \
 elfutils-libelf elfutils-libelf-devel \
 libnsl
+
+
+############
+
+
+sudo ln -s /usr/lib64/libnsl.so.2 /usr/lib64/libnsl.so.1
+sudo ln -s /usr/lib64/libcrypt.so.2 /usr/lib64/libcrypt.so.1
+
+
+########
+
