@@ -20,33 +20,29 @@ sudo systemctl set-default graphical.target
 sudo reboot
 
 sudo cp /usr/lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@.service
-sudo nano /etc/systemd/system/vncserver@.service
-User=arun
 
-sudo systemctl daemon-reexec
-sudo systemctl daemon-reload
 
+
+sudo nano /etc/tigervnc/vncserver.users
 
 sudo systemctl enable --now vncserver@:1.service
 
 sudo firewall-cmd --permanent --add-port=5901/tcp
 sudo firewall-cmd --reload
 
+##########IF REQUIRED ######################
 
-
-sudo nano /home/vncuser/.vnc/xstartup
-
-
+sudo nano /home/arun/.vnc/xstartup
 #!/bin/sh
 unset SESSION_MANAGER
 unset DBUS_SESSION_BUS_ADDRESS
 exec /usr/bin/gnome-session &
 
-chmod +x /home/vncuser/.vnc/xstartup
+chmod +x /home/arun/.vnc/xstartup
 
 sudo systemctl restart vncserver@:1.service
 
-##########################################
+########################################## IF REQUIRED ###############
 
 
 
