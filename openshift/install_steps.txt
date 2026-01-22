@@ -8,10 +8,10 @@ Hardware virtualization support (VT-x or AMD-v)
 #################################################################
 
 # Update package list
-sudo apt update
+sudo apt update -y
 
 # Install KVM and libvirt
-sudo apt install qemu-kvm libvirt-daemon libvirt-daemon-system
+sudo apt install qemu-kvm libvirt-daemon libvirt-daemon-system -y
 
 # Verify KVM installation
 kvm-ok
