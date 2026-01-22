@@ -1,4 +1,8 @@
-
+### note: one issue ur facing with instances it you have to run this command every morning when u start instance
+### sudo systemctl stop xrdp
+### sudo systemctl start xrdp
+### sudo systemctl status xrdp
+########################
 
 
 
