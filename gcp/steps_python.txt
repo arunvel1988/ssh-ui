@@ -1,0 +1,19 @@
+nano cloud.txt
+
+PROJECT_ID=my-gcp-project-id
+LABEL_KEY=schedule
+LABEL_VALUE=office-hours
+
+
+
+gcloud auth application-default login
+
+
+pip install google-api-python-client google-auth
+
+
+
+python vm_start_stop.py start
+
+
+python vm_start_stop.py stop
