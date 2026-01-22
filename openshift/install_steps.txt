@@ -16,7 +16,7 @@ sudo apt install qemu-kvm libvirt-daemon libvirt-daemon-system -y
 # Verify KVM installation
 kvm-ok
 ######################################## Install QEMU and virtiofsd
-sudo apt install qemu-system virtiofsd
+sudo apt install qemu-system virtiofsd -y
 
 # Add your user to the libvirt group
 sudo usermod -aG libvirt $USER
