@@ -1,0 +1,24 @@
+
+
+
+
+aws configure
+
+
+pip install boto3
+#############
+
+nano cloud.txt
+
+REGION=ap-south-1
+TAG_KEY=schedule
+TAG_VALUE=office-hours
+
+
+############
+
+python aws_vm_start_stop.py start
+
+python aws_vm_start_stop.py stop
+
+##########
