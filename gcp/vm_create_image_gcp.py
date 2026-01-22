@@ -20,7 +20,8 @@ def main():
 
     stopped_vms = []
 
-    zones = compute.zones().list(project=project_id).execute()["items"]
+    print("Fetching zones...")
+    zones = compute.zones().list(project=project_id).execute().get("items", [])
 
     for zone in zones:
         zone_name = zone["name"]
@@ -82,7 +83,9 @@ def main():
         print("Operation cancelled.")
         sys.exit(0)
 
-    compute.images().insert(
+    print("\nSubmitting image creation request to GCP...")
+
+    operation = compute.images().insert(
         project=project_id,
         body={
             "name": image_name,
@@ -90,10 +93,11 @@ def main():
         }
     ).execute()
 
-    print("\nImage creation request submitted successfully.")
-    print(f"Image name : {image_name}")
-    print(f"Source VM  : {vm['name']}")
-    print(f"Zone       : {vm['zone']}")
+    print("\nImage creation request accepted.")
+    print("Operation name:", operation.get("name"))
+    print("Image creation is running asynchronously in GCP.")
+    print("You can check progress with:")
+    print(f"  gcloud compute images list --filter=\"name={image_name}\"")
 
 if __name__ == "__main__":
     main()
