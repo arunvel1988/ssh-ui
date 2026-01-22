@@ -59,4 +59,14 @@ source ~/.bashrc
 
 ###############################################################################
 kubectl get nodes 
+kubectl get pods 
+
 #################
+
+kubectl port-forward service/my-nginx 8080:80
+
+
+kubectl port-forward service/my-nginx 8080:80 --address 0.0.0.0
+
+##############################################################
+
