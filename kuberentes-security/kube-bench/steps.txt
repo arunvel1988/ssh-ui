@@ -1,6 +1,6 @@
 kubectl apply -f https://raw.githubusercontent.com/aquasecurity/kube-bench/main/job.yaml
 
-sudo apt update
+sudo apt update -y
 sudo apt install python3 python3-venv python3-pip -y
 
 
