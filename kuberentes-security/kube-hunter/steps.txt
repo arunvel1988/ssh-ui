@@ -1,0 +1,16 @@
+kubectl create -f https://raw.githubusercontent.com/aquasecurity/kube-hunter/main/job.yaml
+sudo apt update -y
+sudo apt install python3 python3-venv python3-pip -y
+
+
+mkdir kube-hunter-dashboard
+cd kube-hunter-dashboard
+
+
+python3 -m venv venv
+
+
+source venv/bin/activate
+
+
+pip install flask
