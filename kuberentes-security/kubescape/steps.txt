@@ -1,0 +1,16 @@
+curl -s https://raw.githubusercontent.com/kubescape/kubescape/master/install.sh | /bin/bash
+sudo apt update -y
+sudo apt install python3 python3-venv python3-pip -y
+
+
+mkdir kube-scape-dashboard
+cd kube-scape-dashboard
+
+
+python3 -m venv venv
+
+
+source venv/bin/activate
+
+
+pip install flask
