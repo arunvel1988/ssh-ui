@@ -11,16 +11,34 @@ app = Flask(__name__)
 def run_kubescape_scan(framework=None):
     try:
         if framework:
-            cmd = ["kubescape", "scan", "framework", framework, "--format", "json"]
+            cmd = f"kubescape scan framework {framework} --format json"
         else:
-            cmd = ["kubescape", "scan", "--format", "json"]
+            cmd = "kubescape scan --format json"
 
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        print(f"[DEBUG] Running command: {cmd}")
+
+        result = subprocess.run(
+            cmd,
+            shell=True,
+            capture_output=True,
+            text=True
+        )
+
+        print("[DEBUG] Return code:", result.returncode)
 
         if result.returncode != 0:
+            print("[ERROR]", result.stderr)
             return {"error": result.stderr}
 
-        return json.loads(result.stdout)
+        # ---- Safe JSON parsing ----
+        try:
+            data = json.loads(result.stdout)
+            return data
+        except json.JSONDecodeError:
+            return {
+                "error": "Kubescape output is not valid JSON",
+                "raw": result.stdout
+            }
 
     except Exception as e:
         return {"error": str(e)}
@@ -34,22 +52,26 @@ def run_kubescape_scan(framework=None):
 def dashboard():
     framework = request.form.get("framework")
 
-    data = run_kubescape_scan(framework)
-
     summary = {}
     controls = []
+    error = None
 
-    if "error" not in data:
-        try:
+    if request.method == "POST":
+        data = run_kubescape_scan(framework)
+
+        if "error" in data:
+            error = data["error"]
+        else:
             summary = data.get("summaryDetails", {})
-            controls = data.get("controlDetails", [])[:10]  # show top 10
-        except:
-            pass
+            controls = data.get("controlDetails", [])[:10]
 
-    return render_template_string(TEMPLATE,
-                                  summary=summary,
-                                  controls=controls,
-                                  framework=framework or "All")
+    return render_template_string(
+        TEMPLATE,
+        summary=summary,
+        controls=controls,
+        framework=framework or "All",
+        error=error
+    )
 
 
 # -----------------------------
@@ -63,21 +85,20 @@ TEMPLATE = """
     <title>Kubescape Security Dashboard</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: Arial;
             background: #0f172a;
             color: white;
             padding: 20px;
         }
-        h1 {
-            color: #38bdf8;
-        }
+        h1 { color: #38bdf8; }
+
         .card {
             background: #1e293b;
             padding: 20px;
             margin: 10px 0;
             border-radius: 10px;
-            box-shadow: 0 0 10px black;
         }
+
         .btn {
             padding: 10px 15px;
             margin: 5px;
@@ -87,20 +108,26 @@ TEMPLATE = """
             cursor: pointer;
             border-radius: 6px;
         }
-        .btn:hover {
-            background: #1d4ed8;
-        }
+
+        .btn:hover { background: #1d4ed8; }
+
         table {
             width: 100%;
             border-collapse: collapse;
         }
+
         th, td {
             padding: 10px;
             border-bottom: 1px solid #334155;
-            text-align: left;
         }
-        th {
-            color: #38bdf8;
+
+        th { color: #38bdf8; }
+
+        .error {
+            background: #7f1d1d;
+            padding: 15px;
+            border-radius: 8px;
+            color: #fecaca;
         }
     </style>
 </head>
@@ -114,6 +141,13 @@ TEMPLATE = """
     <button class="btn" name="framework" value="mitre">Run MITRE</button>
     <button class="btn" name="framework" value="cis-v1.23">Run CIS</button>
 </form>
+
+{% if error %}
+<div class="card error">
+    <h3>Scan Error</h3>
+    <pre>{{ error }}</pre>
+</div>
+{% endif %}
 
 <div class="card">
     <h2>Framework: {{ framework }}</h2>
