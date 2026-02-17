@@ -1,16 +1,25 @@
+#############################################################################################
 curl -s https://raw.githubusercontent.com/kubescape/kubescape/master/install.sh | /bin/bash
 sudo apt update -y
 sudo apt install python3 python3-venv python3-pip -y
-
-
 mkdir kube-scape-dashboard
 cd kube-scape-dashboard
-
-
 python3 -m venv venv
-
-
 source venv/bin/activate
-
-
 pip install flask
+########################################################################################
+kubescape scan
+kubescape scan framework nsa
+kubescape scan framework mitre
+kubescape scan framework cis
+
+kubescape scan *.yaml
+kubescape scan ./manifests
+
+kubescape scan --include-namespaces production
+kubescape scan --include-namespaces prod,dev
+kubescape scan --exclude-namespaces kube-system
+kubescape scan --format json --output results.json
+kubescape scan --format html --output report.html
+
+#######################################################################################################################
