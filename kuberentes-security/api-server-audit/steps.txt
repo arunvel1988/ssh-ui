@@ -65,6 +65,47 @@ sudo tail -f /var/log/kubernetes/audit.log
 ######################################################################
   
 
+# SECRETS AUDIT 
 
+apiVersion: audit.k8s.io/v1
+kind: Policy
+
+rules:
+
+# Log ALL Secret reads (metadata only)
+- level: Metadata
+  resources:
+  - group: ""
+    resources: ["secrets"]
+  verbs: ["get", "list", "watch"]
+
+#  Log Secret creation/modification with full request body
+- level: RequestResponse
+  resources:
+  - group: ""
+    resources: ["secrets"]
+  verbs: ["create", "update", "patch"]
+
+# Log Secret deletions
+- level: Request
+  resources:
+  - group: ""
+    resources: ["secrets"]
+  verbs: ["delete", "deletecollection"]
+
+# Log access from system service accounts separately
+- level: Metadata
+  users: ["system:serviceaccount:kube-system:*"]
+  resources:
+  - group: ""
+    resources: ["secrets"]
+
+# Catch-all rule for secrets subresources (if any future use)
+- level: Metadata
+  resources:
+  - group: ""
+    resources: ["secrets/*"]
+
+#######################################################################################
 
 
