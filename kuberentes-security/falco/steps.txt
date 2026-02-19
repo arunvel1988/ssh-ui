@@ -21,3 +21,30 @@ kubectl exec -it $(kubectl get pods --selector=app=nginx -o name) -- cat /etc/sh
 
 kubectl logs -l app.kubernetes.io/name=falco -n falco -c falco | grep Warning
 ####################################################################################
+falco_custom_rules_cm.yaml
+
+customRules:
+  custom-rules.yaml: |-
+    - rule: Write below etc
+      desc: An attempt to write to /etc directory
+      condition: >
+        (evt.type in (open,openat,openat2) and evt.is_open_write=true and fd.typechar='f' and fd.num>=0)
+        and fd.name startswith /etc
+      output: "File below /etc opened for writing | file=%fd.name pcmdline=%proc.pcmdline gparent=%proc.aname[2] ggparent=%proc.aname[3] gggparent=%proc.aname[4] evt_type=%evt.type user=%user.name user_uid=%user.uid user_loginuid=%user.loginuid process=%proc.name proc_exepath=%proc.exepath parent=%proc.pname command=%proc.cmdline terminal=%proc.tty"
+      priority: WARNING
+      tags: [filesystem, mitre_persistence]
+
+#####################################################################################
+helm upgrade --namespace falco falco falcosecurity/falco --set tty=true -f falco_custom_rules_cm.yaml
+
+kubectl wait pods --for=condition=Ready --all -n falco
+
+kubectl -n falco get svc
+
+kubectl -n falco port-forward svc/falco-falcosidekick-ui 2802 --address 0.0.0.00
+
+##########################################################################################################
+
+
+
+
