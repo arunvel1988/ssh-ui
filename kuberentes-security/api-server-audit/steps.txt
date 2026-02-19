@@ -1,0 +1,70 @@
+###################################################################
+
+
+sudo nano /etc/kubernetes/audit-policy.yaml
+
+
+apiVersion: audit.k8s.io/v1
+kind: Policy
+rules:
+
+# Log all requests at metadata level
+- level: Metadata
+#########################################################################
+
+sudo mkdir -p /var/log/kubernetes
+sudo touch /var/log/kubernetes/audit.log
+sudo chmod 644 /var/log/kubernetes/audit.log
+
+##############################################################
+
+sudo nano /etc/kubernetes/manifests/kube-apiserver.yaml
+
+
+- --audit-policy-file=/etc/kubernetes/audit-policy.yaml
+- --audit-log-path=/var/log/kubernetes/audit.log
+- --audit-log-maxage=7
+- --audit-log-maxbackup=5
+- --audit-log-maxsize=10
+
+###############################################################################
+
+add this in volumeMounts
+
+
+- name: audit-policy
+  mountPath: /etc/kubernetes/audit-policy.yaml
+  readOnly: true
+
+- name: audit-log
+  mountPath: /var/log/kubernetes
+##################################################################################
+
+## ADD THIS IN VOLUMES SECTION 
+- name: audit-policy
+  hostPath:
+    path: /etc/kubernetes/audit-policy.yaml
+    type: File
+
+- name: audit-log
+  hostPath:
+    path: /var/log/kubernetes
+    type: DirectoryOrCreate
+
+######################################################################
+
+
+
+kubectl get pods
+kubectl create ns audit-demo
+kubectl delete ns audit-demo
+kubectl get secrets -A
+
+
+sudo tail -f /var/log/kubernetes/audit.log
+######################################################################
+  
+
+
+
+
