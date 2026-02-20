@@ -45,6 +45,12 @@ kubectl -n falco port-forward svc/falco-falcosidekick-ui 2802 --address 0.0.0.00
 
 ##########################################################################################################
 
+ curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh
+        syft alpine -o json > sbom.json
+        cat sbom.json
+        jq '.artifacts[] | {name: .name, version: .version, type: .type}' sbom.json
+        jq '.artifacts[] | {name: .name, version: .version, licenses: .licenses}' sbom.json
+
 
 
 
