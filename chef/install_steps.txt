@@ -122,8 +122,21 @@ end
 ################################################################
 
 vagrant up
-
+###############
 vagrant plugin install vagrant-scp
+vagrant ssh chef-server
+sudo chef-server-ctl reconfigure --chef-license accept
+sudo chef-server-ctl user-create admin Arun Admin admin@example.com password \
+--filename /home/vagrant/admin.pem
+
+sudo chef-server-ctl org-create myorg "My Organization" \
+--association_user admin \
+--filename /home/vagrant/myorg-validator.pem
+
+
+
+
+##############
 
 vagrant scp chef-server:/home/vagrant/admin.pem .
 vagrant scp chef-server:/home/vagrant/myorg-validator.pem .
