@@ -1,6 +1,7 @@
 ###########################################################################################################
 
 sudo apt update -y
+sudo apt install git nano -y
 sudo apt install virtualbox -y
 sudo apt install vagrant -y
 
