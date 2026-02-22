@@ -123,6 +123,8 @@ end
 
 vagrant up
 
+vagrant plugin install vagrant-scp
+
 vagrant scp chef-server:/home/vagrant/admin.pem .
 vagrant scp chef-server:/home/vagrant/myorg-validator.pem .
 ################################################################
