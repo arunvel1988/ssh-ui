@@ -25,7 +25,7 @@ cd chef-lab
 
 ################################################################
 touch Vagrantfile
-
+nano Vagrantfile
 
 
 Vagrant.configure("2") do |config|
