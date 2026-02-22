@@ -1,0 +1,168 @@
+###########################################################################################################
+
+sudo apt update
+sudo apt install virtualbox -y
+sudo apt install vagrant -y
+
+
+vagrant --version
+
+mkdir chef-lab
+cd chef-lab
+
+################################################################
+touch Vagrantfile
+
+
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "ubuntu/noble64"
+
+  # ============================
+  # Chef Server
+  # ============================
+  config.vm.define "chef-server" do |chefserver|
+    chefserver.vm.hostname = "chef-server"
+    chefserver.vm.network "private_network", ip: "192.168.56.10"
+
+    chefserver.vm.provider "virtualbox" do |vb|
+      vb.memory = 4096
+      vb.cpus = 2
+    end
+
+    chefserver.vm.provision "shell", inline: <<-SHELL
+      sudo apt update -y
+      sudo apt install curl -y
+
+      curl -L https://packages.chef.io/files/stable/chef-server/latest/ubuntu/24.04/chef-server-core_latest_amd64.deb -o chef-server.deb
+      sudo dpkg -i chef-server.deb
+
+      sudo chef-server-ctl reconfigure
+
+      sudo chef-server-ctl user-create admin Arun Admin admin@example.com password --filename /home/vagrant/admin.pem
+
+      sudo chef-server-ctl org-create myorg "My Organization" \
+        --association_user admin \
+        --filename /home/vagrant/myorg-validator.pem
+    SHELL
+  end
+
+
+  # ============================
+  # Chef Workstation
+  # ============================
+  config.vm.define "chef-workstation" do |workstation|
+    workstation.vm.hostname = "chef-workstation"
+    workstation.vm.network "private_network", ip: "192.168.56.20"
+
+    workstation.vm.provider "virtualbox" do |vb|
+      vb.memory = 2048
+    end
+
+    workstation.vm.provision "shell", inline: <<-SHELL
+      sudo apt update -y
+      sudo apt install curl -y
+
+      curl -L https://packages.chef.io/files/stable/chef-workstation/latest/ubuntu/24.04/chef-workstation_latest_amd64.deb -o chef-workstation.deb
+      sudo dpkg -i chef-workstation.deb
+
+      mkdir -p /home/vagrant/.chef
+      mkdir -p /home/vagrant/cookbooks
+    SHELL
+  end
+
+
+  # ============================
+  # Node 1
+  # ============================
+  config.vm.define "node1" do |node1|
+    node1.vm.hostname = "node1"
+    node1.vm.network "private_network", ip: "192.168.56.30"
+
+    node1.vm.provider "virtualbox" do |vb|
+      vb.memory = 1024
+    end
+  end
+
+
+  # ============================
+  # Node 2
+  # ============================
+  config.vm.define "node2" do |node2|
+    node2.vm.hostname = "node2"
+    node2.vm.network "private_network", ip: "192.168.56.40"
+
+    node2.vm.provider "virtualbox" do |vb|
+      vb.memory = 1024
+    end
+  end
+
+end
+
+
+################################################################
+
+vagrant up
+
+vagrant scp chef-server:/home/vagrant/admin.pem .
+vagrant scp chef-server:/home/vagrant/myorg-validator.pem .
+################################################################
+
+vagrant scp admin.pem chef-workstation:/home/vagrant/.chef/
+vagrant scp myorg-validator.pem chef-workstation:/home/vagrant/.chef/
+
+vagrant ssh chef-workstation
+cd ~/.chef
+
+################################################################
+nano config.rb
+
+current_dir = File.dirname(__FILE__)
+log_level                :info
+log_location             STDOUT
+node_name                "admin"
+client_key               "#{current_dir}/admin.pem"
+chef_server_url          "https://192.168.56.10/organizations/myorg"
+cookbook_path            ["#{current_dir}/../cookbooks"]
+
+
+
+knife ssl fetch
+knife client list
+
+##From workstation
+
+knife bootstrap 192.168.56.30 -x vagrant -P vagrant --sudo
+knife bootstrap 192.168.56.40 -x vagrant -P vagrant --sudo
+
+knife node list
+
+##############################################################
+
+
+##test cookbook
+
+cd ~
+chef generate cookbook cookbooks/apache
+########
+package "apache2"
+
+service "apache2" do
+  action [:enable, :start]
+end
+
+#########
+
+knife cookbook upload apache
+
+knife node run_list add node1 "recipe[apache]"
+knife node run_list add node2 "recipe[apache]"
+
+
+knife ssh 'name:*' 'sudo chef-client' -x vagrant -P vagrant
+
+
+##############################################################
+##############################################################
+
