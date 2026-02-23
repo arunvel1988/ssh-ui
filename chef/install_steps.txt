@@ -107,6 +107,9 @@ knife node list
 ##test cookbook
 
 cd ~
+
+git config --global user.name "Arunvel"
+git config --global user.email "arunvel@example.com"
 chef generate cookbook cookbooks/apache
 ########
 package "apache2"
