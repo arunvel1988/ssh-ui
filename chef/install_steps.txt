@@ -138,3 +138,44 @@ knife ssh 'name:*' 'sudo chef-client' -x vagrant -P vagrant
 ##############################################################
 ##############################################################
 
+
+chef client on nodes
+
+
+# from node 1
+
+vagrant ssh node1
+
+sudo chef-client
+############
+
+sudo nano /etc/systemd/system/chef-client.service
+#################
+[Unit]
+Description=Chef Infra Client
+After=network.target
+
+[Service]
+ExecStart=/opt/chef/bin/chef-client -i 1800 -s 60
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+
+#################
+
+sudo systemctl daemon-reload
+sudo systemctl enable chef-client
+sudo systemctl start chef-client
+
+################
+
+sudo systemctl status chef-client
+
+#############
+
+repeat on node2 also
+
+################
+
