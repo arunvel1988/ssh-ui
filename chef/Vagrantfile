@@ -20,12 +20,9 @@ Vagrant.configure("2") do |config|
 
       apt update -y
       apt install -y curl
-
       echo "Downloading Chef Server..."
-      curl -L https://omnitruck.chef.io/install.sh -o install.sh
-      sudo bash install.sh -P chef-workstation
-
-    
+      curl -L https://packages.chef.io/files/stable/chef-server/15.8.0/ubuntu/22.04/chef-server-core_15.8.0-1_amd64.deb -o chef-server.deb
+      dpkg -i chef-server.deb 
 
       echo "Running reconfigure with license acceptance..."
       chef-server-ctl reconfigure --chef-license accept
@@ -66,9 +63,12 @@ Vagrant.configure("2") do |config|
       apt install -y curl
 
       echo "Installing Chef Workstation..."
-      curl -L https://packages.chef.io/files/stable/chef-workstation/23.9.1037/ubuntu/22.04/chef-workstation_23.9.1037-1_amd64.deb -o chef-workstation.deb
-
-      dpkg -i chef-workstation.deb
+      curl -L https://omnitruck.chef.io/install.sh -o install.sh
+      sudo bash install.sh -P chef-workstation
+      ls /opt/chef-workstation/bin
+      echo 'export PATH="/opt/chef-workstation/bin:$PATH"' >> ~/.bashrc
+      source ~/.bashrc
+      knife --version
 
       mkdir -p /home/vagrant/.chef
       mkdir -p /home/vagrant/cookbooks
