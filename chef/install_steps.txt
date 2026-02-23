@@ -112,9 +112,15 @@ git config --global user.name "Arunvel"
 git config --global user.email "arunvel@example.com"
 chef generate cookbook cookbooks/apache
 ########
-package "apache2"
+apt_update 'update_packages' do
+  action :update
+end
 
-service "apache2" do
+package 'apache2' do
+  action :install
+end
+
+service 'apache2' do
   action [:enable, :start]
 end
 
