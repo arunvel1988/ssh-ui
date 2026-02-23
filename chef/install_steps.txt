@@ -77,6 +77,22 @@ cookbook_path            ["#{current_dir}/../cookbooks"]
 
 knife ssl fetch
 knife client list
+####################
+# from main ubuntu
+
+vagrant ssh node1
+sudo nano /etc/hosts
+192.168.56.10 chef-server
+
+exit 
+vagrant ssh node2
+sudo nano /etc/hosts
+192.168.56.10 chef-server
+
+
+####################
+
+
 
 ##From workstation
 
