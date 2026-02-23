@@ -1,0 +1,123 @@
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "generic/ubuntu2204"
+
+  # Common hosts entries
+  hosts_entries = <<-HOSTS
+192.168.56.10 chef-server
+192.168.56.20 chef-workstation
+192.168.56.30 node1
+192.168.56.40 node2
+HOSTS
+
+  # ============================
+  # Chef Server
+  # ============================
+  config.vm.define "chef-server" do |chefserver|
+    chefserver.vm.hostname = "chef-server"
+    chefserver.vm.network "private_network", ip: "192.168.56.10"
+
+    chefserver.vm.provider "virtualbox" do |vb|
+      vb.memory = 4096
+      vb.cpus = 2
+    end
+
+    chefserver.vm.provision "shell", privileged: true, inline: <<-SHELL
+      export DEBIAN_FRONTEND=noninteractive
+      export CHEF_LICENSE=accept
+
+      apt update -y
+      apt install -y curl
+
+      echo "#{hosts_entries}" >> /etc/hosts
+
+      echo "Downloading Chef Server..."
+      curl -L https://packages.chef.io/files/stable/chef-server/15.8.0/ubuntu/22.04/chef-server-core_15.8.0-1_amd64.deb -o chef-server.deb
+      dpkg -i chef-server.deb
+
+      chef-server-ctl reconfigure --chef-license accept
+
+      sleep 60
+
+      chef-server-ctl user-create admin Arun Admin admin@example.com password \
+        --filename /home/vagrant/admin.pem \
+        --chef-license accept
+
+      chef-server-ctl org-create myorg "My Organization" \
+        --association_user admin \
+        --filename /home/vagrant/myorg-validator.pem \
+        --chef-license accept
+
+      chown vagrant:vagrant /home/vagrant/*.pem
+    SHELL
+  end
+
+
+  # ============================
+  # Chef Workstation
+  # ============================
+  config.vm.define "chef-workstation" do |workstation|
+    workstation.vm.hostname = "chef-workstation"
+    workstation.vm.network "private_network", ip: "192.168.56.20"
+
+    workstation.vm.provider "virtualbox" do |vb|
+      vb.memory = 2048
+    end
+
+    workstation.vm.provision "shell", privileged: true, inline: <<-SHELL
+      export DEBIAN_FRONTEND=noninteractive
+      export CHEF_LICENSE=accept
+
+      apt update -y
+      apt install -y curl
+
+      echo "#{hosts_entries}" >> /etc/hosts
+
+      curl -L https://omnitruck.chef.io/install.sh -o install.sh
+      bash install.sh -P chef-workstation
+
+      echo 'export PATH="/opt/chef-workstation/bin:$PATH"' >> /home/vagrant/.bashrc
+
+      mkdir -p /home/vagrant/.chef
+      mkdir -p /home/vagrant/cookbooks
+
+      chown -R vagrant:vagrant /home/vagrant/.chef
+      chown -R vagrant:vagrant /home/vagrant/cookbooks
+    SHELL
+  end
+
+
+  # ============================
+  # Node 1
+  # ============================
+  config.vm.define "node1" do |node1|
+    node1.vm.hostname = "node1"
+    node1.vm.network "private_network", ip: "192.168.56.30"
+
+    node1.vm.provider "virtualbox" do |vb|
+      vb.memory = 1024
+    end
+
+    node1.vm.provision "shell", privileged: true, inline: <<-SHELL
+      echo "#{hosts_entries}" >> /etc/hosts
+    SHELL
+  end
+
+
+  # ============================
+  # Node 2
+  # ============================
+  config.vm.define "node2" do |node2|
+    node2.vm.hostname = "node2"
+    node2.vm.network "private_network", ip: "192.168.56.40"
+
+    node2.vm.provider "virtualbox" do |vb|
+      vb.memory = 1024
+    end
+
+    node2.vm.provision "shell", privileged: true, inline: <<-SHELL
+      echo "#{hosts_entries}" >> /etc/hosts
+    SHELL
+  end
+
+end
