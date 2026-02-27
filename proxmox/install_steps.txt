@@ -32,3 +32,11 @@ sudo virt-install \
 
 #######################################################
 
+sudo virsh --connect qemu:///system list
+
+sudo virsh --connect qemu:///system vncdisplay proxmox-nested
+
+
+
+
+
