@@ -1,0 +1,34 @@
+#######################################################
+# sudo apt update -y
+sudo apt install cpu-checker -y
+
+#######################################################
+sudo apt install qemu-kvm libvirt-daemon-system virt-manager bridge-utils -y
+
+sudo systemctl status libvirtd
+
+#######################################################
+wget https://enterprise.proxmox.com/iso/proxmox-ve_9.1-1.iso
+
+sudo usermod -aG libvirt $USER
+sudo usermod -aG kvm $USER
+
+#######################################################
+sudo mv ~/proxmox-ve_9.1-1.iso /var/lib/libvirt/images/
+
+#######################################################
+
+sudo virt-install \
+--connect qemu:///system \
+--name proxmox-nested \
+--ram 8192 \
+--vcpus 4 \
+--cpu host-passthrough \
+--disk size=100,bus=virtio \
+--cdrom /var/lib/libvirt/images/proxmox-ve_9.1-1.iso \
+--network network=default,model=virtio \
+--graphics vnc \
+--osinfo debian12
+
+#######################################################
+
